@@ -1,8 +1,9 @@
 ---
 title: "PA1_template"
 author: "Brian True"
-date: "March 15, 2015"
-output: html_document
+date: "April 15, 2015"
+output:
+  html_document: default
 ---
 
 ### 1. Loading and preprocessing the data
