@@ -13,7 +13,8 @@ output: html_document
 * The script checks if the required libraries are already available then                installs those that are not.
 * NOTE: Warnigs are supresed to eliminate cluttered appearance when running script.
 
-```{r,echo=TRUE}
+
+```r
 pkgs <- c("data.table","lattice")
 for(pkg in pkgs){
      if(!require(pkg,character.only=T)){
@@ -34,7 +35,8 @@ WD <- getwd()
 * __activity_DT__ : The complete original dataset.
 * A prieview of the data table is displayed
 
-```{r,echo=TRUE}
+
+```r
 if(!file.exists("./DATA")){dir.create("./DATA")}
 setwd("./DATA")
 url <- "http://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip"
@@ -42,6 +44,24 @@ download.file(url,"activity.zip",method="wget",quiet=T)
 unzip("activity.zip")
 activity_DT <- fread("activity.csv")
 activity_DT
+```
+
+```
+##        steps       date interval
+##     1:    NA 2012-10-01        0
+##     2:    NA 2012-10-01        5
+##     3:    NA 2012-10-01       10
+##     4:    NA 2012-10-01       15
+##     5:    NA 2012-10-01       20
+##    ---                          
+## 17564:    NA 2012-11-30     2335
+## 17565:    NA 2012-11-30     2340
+## 17566:    NA 2012-11-30     2345
+## 17567:    NA 2012-11-30     2350
+## 17568:    NA 2012-11-30     2355
+```
+
+```r
 setwd(WD)
 ```
 
@@ -53,14 +73,26 @@ setwd(WD)
      + __total.steps:__ sum of steps taken each day
 * Prints the head of the new data table
 
-```{r,echo=TRUE}
+
+```r
 trim_DT <- activity_DT[,list(total.steps=sum(steps),mean.steps=mean(steps)),by='date']
 head(trim_DT)
 ```
 
+```
+##          date total.steps mean.steps
+## 1: 2012-10-01          NA         NA
+## 2: 2012-10-02         126    0.43750
+## 3: 2012-10-03       11352   39.41667
+## 4: 2012-10-04       12116   42.06944
+## 5: 2012-10-05       13294   46.15972
+## 6: 2012-10-06       15420   53.54167
+```
+
 #### 2.2 Plot histogram of total number of steps taken per day
 
-```{r figure1,echo=TRUE,fig.heighth=8,fig.width=10}
+
+```r
 hist(trim_DT[,total.steps],
      breaks=25,
      col="red",
@@ -71,20 +103,29 @@ hist(trim_DT[,total.steps],
      )
 ```
 
+![plot of chunk figure1](figure/figure1-1.png) 
+
 #### 2.3 Calculate & report mean and median of total number of steps taken per day
 
 * Here we use the trim_DT data and remove all NA values when making calculations.
 
-```{r,echo=TRUE}
+
+```r
 mean.total.steps <- mean(trim_DT[,total.steps],na.rm=T)
 ```
 
-```{r,echo=TRUE}
+
+```r
 median.total.steps <- median(trim_DT[,total.steps],na.rm=T)
 ```
 
-```{r,echo=TRUE}
+
+```r
 abs(mean.total.steps - median.total.steps)
+```
+
+```
+## [1] 1.188679
 ```
 
 ### 3. What is the average daily activity pattern?
@@ -99,7 +140,8 @@ The daily activity pattern follows what we would expect with few or no steps dur
 * __times:__ a vector of length 288 with times coinciding with 5 min intervals in 24 hour day
 * Then I aggregated the the original data set calculating the mean number of steps for each time interval over all days and removing NA data.
 
-```{r,echo=TRUE}
+
+```r
 datetimes <- seq(ISOdatetime(2012,10,01,0,0,0,tz="GMT"),ISOdatetime(2012,11,30,23,55,0,tz="GMT"),by=(60*5))
 
 times <- as.factor(format(datetimes[1:288],"%H:%M"))
@@ -115,11 +157,27 @@ interval_DT <- interval_DT[,times:=times]
 interval_DT
 ```
 
+```
+##      interval     steps times
+##   1:        0 1.7169811 00:00
+##   2:        5 0.3396226 00:05
+##   3:       10 0.1320755 00:10
+##   4:       15 0.1509434 00:15
+##   5:       20 0.0754717 00:20
+##  ---                         
+## 284:     2335 4.6981132 23:35
+## 285:     2340 3.3018868 23:40
+## 286:     2345 0.6415094 23:45
+## 287:     2350 0.2264151 23:50
+## 288:     2355 1.0754717 23:55
+```
+
 * Plot the average number of steps per interval vs. time interval.
 * Create the labels for the x-axis.
 * And, format the plot.
 
-```{r figure2,echo=TRUE,fig.heighth=6,fig.width=10}
+
+```r
 plot(interval_DT$interval,interval_DT$steps,
      type="l",
      xlab="Time",
@@ -141,17 +199,30 @@ axis(side=1,
      )
 ```
 
+![plot of chunk figure2](figure/figure2-1.png) 
+
 #### 3.2 Find the interval with the greatest average number of steps
 
-```{r,echo=TRUE}
+
+```r
 interval_DT[which.max(interval_DT$steps),]$interval
+```
+
+```
+## [1] 835
 ```
 
 ### 4. Imputing missing values
 #### 4.1 Report the number of rows containing ‘NA’ values
 
-```{r,echo=TRUE}
+
+```r
 colSums(is.na(activity_DT))
+```
+
+```
+##    steps     date interval 
+##     2304        0        0
 ```
 
 #### 4.2 Calculate average of non ‘NA’ values for “steps” variable to fill missing data
@@ -159,7 +230,8 @@ colSums(is.na(activity_DT))
 * __fill:__ a calculated value used the replace all the NA values in steps
 * __fill__ was calculated by taking the mean of the full dataset without NA values
 
-```{r,echo=TRUE}
+
+```r
 fill <- mean(activity_DT[,steps],na.rm=T)
 ```
 
@@ -173,18 +245,41 @@ fill <- mean(activity_DT[,steps],na.rm=T)
 * Head and tail of __filled_DT__ printed
 * Print the histogram
 
-```{r,echo=TRUE}
+
+```r
 activity_DT2 <- replace(activity_DT,is.na(activity_DT),fill)
 filled_DT <- activity_DT2[,list(total.steps=sum(steps),mean.steps=mean(steps)),by="date"]
 
 head(filled_DT)
 ```
 
-```{r,echo=TRUE}
+```
+##          date total.steps mean.steps
+## 1: 2012-10-01    10766.19   37.38260
+## 2: 2012-10-02      126.00    0.43750
+## 3: 2012-10-03    11352.00   39.41667
+## 4: 2012-10-04    12116.00   42.06944
+## 5: 2012-10-05    13294.00   46.15972
+## 6: 2012-10-06    15420.00   53.54167
+```
+
+
+```r
 tail(filled_DT)
 ```
 
-```{r figure3,echo=TRUE,fig.height=8,fig.width=10}
+```
+##          date total.steps mean.steps
+## 1: 2012-11-25    11834.00   41.09028
+## 2: 2012-11-26    11162.00   38.75694
+## 3: 2012-11-27    13646.00   47.38194
+## 4: 2012-11-28    10183.00   35.35764
+## 5: 2012-11-29     7047.00   24.46875
+## 6: 2012-11-30    10766.19   37.38260
+```
+
+
+```r
 hist(filled_DT[,total.steps],
      breaks=25,
      col="green",
@@ -195,36 +290,63 @@ hist(filled_DT[,total.steps],
      )
 ```
 
+![plot of chunk figure3](figure/figure3-1.png) 
+
 ### 4.4: calculate the mean & median value of total steps from filled dataset
 
 * Calculate the mean of the filled data
 * Calculate the medaian of the filled date
 * Calculate the diffrence between the two values for purpose of analysis
 
-```{r,echo=TRUE}
+
+```r
 filled.mean.total.steps <- mean(filled_DT[,total.steps],na.rm=T)
 filled.mean.total.steps
 ```
 
-```{r,echo=TRUE}
+```
+## [1] 10766.19
+```
+
+
+```r
 filled.median.total.steps <- median(filled_DT[,total.steps],na.rm=T)
 filled.median.total.steps
 ```
 
-```{r,echo=TRUE}
+```
+## [1] 10766.19
+```
+
+
+```r
 abs(filled.mean.total.steps - filled.median.total.steps)
+```
+
+```
+## [1] 0
 ```
 
 #### 4.5 Compare filled data to original data
 
 We see that the mean values have a differince of zero, while the median values differ slightly. This is most probably caused by our choice of methods for filling the missing data points which involved use of the calculated mean over the entire data set. But, this skewed the median value of the filled data slightly. Had we used a median value to fill the missing data points we would have seen skew in the mean of the mean values. 
 
-```{r,echo=TRUE}
+
+```r
 abs(filled.median.total.steps - median.total.steps)
 ```
 
-```{r,echo=TRUE}
+```
+## [1] 1.188679
+```
+
+
+```r
 abs(filled.mean.total.steps - mean.total.steps)
+```
+
+```
+## [1] 0
 ```
 
 ### 5. Are there differences in activity patterns between weekdays and weekends?
@@ -237,11 +359,28 @@ From the panel plots created below we can see that the weekday and weekend data 
 * __type:__ factor vector with 2 levels indicating whether the day is a __weekend or weekday__
 * __weekdays()__ function is called to creaate __days__ from which __type__ is determined
 
-```{r,echo=TRUE}
+
+```r
 activity_DT2[,days:=weekdays(datetimes,abbreviate=T)]
 ```
 
-```{r,echo=TRUE}
+```
+##          steps       date interval days
+##     1: 37.3826 2012-10-01        0  Mon
+##     2: 37.3826 2012-10-01        5  Mon
+##     3: 37.3826 2012-10-01       10  Mon
+##     4: 37.3826 2012-10-01       15  Mon
+##     5: 37.3826 2012-10-01       20  Mon
+##    ---                                 
+## 17564: 37.3826 2012-11-30     2335  Fri
+## 17565: 37.3826 2012-11-30     2340  Fri
+## 17566: 37.3826 2012-11-30     2345  Fri
+## 17567: 37.3826 2012-11-30     2350  Fri
+## 17568: 37.3826 2012-11-30     2355  Fri
+```
+
+
+```r
 activity_DT2$type <- factor(activity_DT2[,days] %in% c("Sat","Sun"))
 levels(activity_DT2$type)[levels(activity_DT2$type)=="TRUE"] <- "weekend"
 levels(activity_DT2$type)[levels(activity_DT2$type)=="FALSE"] <- "weekday"
@@ -253,7 +392,8 @@ levels(activity_DT2$type)[levels(activity_DT2$type)=="FALSE"] <- "weekday"
 * Once the data table is created __xyplot()__ function from the __lattice package__ is called to plot the data.
 * Additional code is used to format the output of the plot making it easier to see and read the resulting graph.
 
-```{r,echo=TRUE}
+
+```r
 interval_DT2 <- data.table(aggregate(steps ~ interval + type,
                data=activity_DT2,
                mean,
@@ -263,7 +403,23 @@ interval_DT2 <- data.table(aggregate(steps ~ interval + type,
 interval_DT2
 ```
 
-```{r figure4,echo=TRUE,fig.height=10,fig.width=10}
+```
+##      interval    type     steps
+##   1:        0 weekday  7.006569
+##   2:        5 weekday  5.384347
+##   3:       10 weekday  5.139902
+##   4:       15 weekday  5.162124
+##   5:       20 weekday  5.073235
+##  ---                           
+## 572:     2335 weekend 15.672825
+## 573:     2340 weekend 10.547825
+## 574:     2345 weekend  6.297825
+## 575:     2350 weekend  4.672825
+## 576:     2355 weekend  4.672825
+```
+
+
+```r
 print(xyplot(steps ~ interval | as.factor(type),
      type="l",        
      data = interval_DT2,
@@ -275,3 +431,5 @@ print(xyplot(steps ~ interval | as.factor(type),
      )
 )
 ```
+
+![plot of chunk figure4](figure/figure4-1.png) 
