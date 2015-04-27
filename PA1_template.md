@@ -1,9 +1,8 @@
 ---
 title: "PA1_template"
 author: "Brian True"
-date: "April 15, 2015"
-output:
-  html_document: default
+date: "March 15, 2015"
+output: html_document
 ---
 
 ### 1. Loading and preprocessing the data
@@ -104,7 +103,7 @@ hist(trim_DT[,total.steps],
      )
 ```
 
-![plot of chunk figure1](figure/figure1-1.png) 
+![plot of chunk plot1](figure/plot1-1.png) 
 
 #### 2.3 Calculate & report mean and median of total number of steps taken per day
 
@@ -113,11 +112,21 @@ hist(trim_DT[,total.steps],
 
 ```r
 mean.total.steps <- mean(trim_DT[,total.steps],na.rm=T)
+mean.total.steps
+```
+
+```
+## [1] 10766.19
 ```
 
 
 ```r
 median.total.steps <- median(trim_DT[,total.steps],na.rm=T)
+median.total.steps
+```
+
+```
+## [1] 10765
 ```
 
 
@@ -200,7 +209,7 @@ axis(side=1,
      )
 ```
 
-![plot of chunk figure2](figure/figure2-1.png) 
+![plot of chunk plot2](figure/plot2-1.png) 
 
 #### 3.2 Find the interval with the greatest average number of steps
 
@@ -291,7 +300,7 @@ hist(filled_DT[,total.steps],
      )
 ```
 
-![plot of chunk figure3](figure/figure3-1.png) 
+![plot of chunk plot3](figure/plot3-1.png) 
 
 ### 4.4: calculate the mean & median value of total steps from filled dataset
 
@@ -433,4 +442,6 @@ print(xyplot(steps ~ interval | as.factor(type),
 )
 ```
 
-![plot of chunk figure4](figure/figure4-1.png) 
+![plot of chunk plot4](figure/plot4-1.png) 
+
+
